@@ -1,89 +1,252 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Облачное приложение</title>
-    <style>
-      body { font-family: 'Inter', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-      .container { width: 100%; max-width: 500px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-      
-      /* Стили блока авторизации */
-      .auth-bar { background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-      .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #007bff; }
-      
-      input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-      button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: 600; cursor: pointer; transition: 0.3s; }
-      button:hover { background: #0056b3; }
-      button:disabled { background: #ccc; }
-      .logout-btn { background: #ff4757; padding: 8px 15px; width: auto; font-size: 14px; }
-      
-      .post { background: #fff; border: 1px solid #eaeaea; padding: 15px; margin-top: 15px; border-radius: 8px; width: 100%; max-width: 500px; }
-      .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-      .post-avatar { width: 30px; height: 30px; border-radius: 50%; }
-      .like-btn { cursor: pointer; border: none; background: #f8f9fa; padding: 5px 12px; border-radius: 20px; margin-top: 10px; }
-      .time { font-size: 11px; color: #999; margin-left: auto; }
-    </style>
-  </head>
-  <body>
-    <div id="authSection" class="container" style="max-width: 500px; text-align: center;">
-      <button id="loginBtn">Войти через Google</button>
-      <div id="userInfo" style="display: none;" class="auth-bar">
-        <img id="userPhoto" class="user-avatar" src="" alt="Avatar">
-        <span id="userName" style="font-weight: bold;"></span>
-        <button id="logoutBtn" class="logout-btn">Выйти</button>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Облачное приложение</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f7f6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .post {
+      background: #fff;
+      padding: 10px;
+      border: 1px solid #ddd;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    .auth-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 40px;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- АВТОРИЗАЦИЯ -->
+<div class="container">
+  <button id="loginBtn">Войти через Google</button>
+
+  <div id="userInfo" style="display:none;" class="auth-bar">
+    <img id="userPhoto" class="avatar">
+    <span id="userName"></span>
+    <button id="logoutBtn">Выйти</button>
+  </div>
+</div>
+
+<!-- ФОРМА -->
+<div id="formBlock" class="container" style="display:none;">
+  <input id="content" placeholder="Что у вас нового?">
+  <button id="sendBtn">Опубликовать</button>
+</div>
+
+<!-- ПРОСТАЯ ФОРМА (первая часть) -->
+<div class="container">
+  <form id="feedbackForm">
+    <input type="text" id="simpleName" placeholder="Имя" required>
+    <input type="email" id="simpleEmail" placeholder="Email" required>
+    <button type="submit">Отправить</button>
+  </form>
+</div>
+
+<!-- ЛЕНТА -->
+<div id="feed" class="container"></div>
+
+<!-- SUPABASE СТАТУС -->
+<div class="container">
+  <input id="statusText" placeholder="Статус">
+  <input id="statusColor" placeholder="Цвет (например red)">
+  <button onclick="changeStatus()">Обновить статус</button>
+
+  <div id="groupList"></div>
+</div>
+
+<script type="module">
+
+/* ================= FIREBASE ================= */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { 
+  getFirestore, collection, addDoc, query, orderBy,
+  onSnapshot, serverTimestamp, updateDoc, doc, increment
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+import {
+  getAuth, signInWithPopup, GoogleAuthProvider,
+  signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDfNDJWzFmXGLQSCiMcu8Th1hiHKFn8zew",
+  authDomain: "dk-cloudservice.firebaseapp.com",
+  projectId: "dk-cloudservice",
+  storageBucket: "dk-cloudservice.firebasestorage.app",
+  messagingSenderId: "693547692447",
+  appId: "1:693547692447:web:f8e296855617d1dcd28daa",
+  measurementId: "G-JB68T9ZG1M"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+/* ===== АВТОРИЗАЦИЯ ===== */
+
+loginBtn.onclick = () => signInWithPopup(auth, provider);
+logoutBtn.onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    userInfo.style.display = "flex";
+    loginBtn.style.display = "none";
+    formBlock.style.display = "block";
+
+    userName.innerText = user.displayName;
+    userPhoto.src = user.photoURL;
+  } else {
+    userInfo.style.display = "none";
+    loginBtn.style.display = "block";
+    formBlock.style.display = "none";
+  }
+});
+
+/* ===== ДОБАВЛЕНИЕ ПОСТА ===== */
+
+sendBtn.onclick = async () => {
+  if (!content.value) return alert("Введите текст");
+
+  await addDoc(collection(db, "posts"), {
+    text: content.value,
+    name: auth.currentUser.displayName,
+    photo: auth.currentUser.photoURL,
+    likes: 0,
+    timestamp: serverTimestamp()
+  });
+
+  content.value = "";
+};
+
+/* ===== ЛАЙК ===== */
+
+window.like = async (id) => {
+  await updateDoc(doc(db, "posts", id), {
+    likes: increment(1)
+  });
+};
+
+/* ===== ЛЕНТА ===== */
+
+const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+
+onSnapshot(q, (snap) => {
+  feed.innerHTML = "";
+  snap.forEach(d => {
+    const data = d.data();
+
+    feed.innerHTML += `
+      <div class="post">
+        <b>${data.name}</b><br>
+        ${data.text}<br>
+        ❤️ ${data.likes}
+        <button onclick="like('${d.id}')">Лайк</button>
       </div>
+    `;
+  });
+});
+
+/* ===== ПРОСТАЯ ФОРМА ===== */
+
+feedbackForm.onsubmit = async (e) => {
+  e.preventDefault();
+
+  await addDoc(collection(db, "requests"), {
+    name: simpleName.value,
+    email: simpleEmail.value,
+    timestamp: new Date()
+  });
+
+  alert("Отправлено");
+  feedbackForm.reset();
+};
+
+/* ================= SUPABASE ================= */
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabase = createClient(
+  "https://chowfonqknpblciyglse.supabase.co",
+  "sb_publishable_kne7upkD1MVs5ZIRGUJx8Q_OMVBFUA3"
+);
+
+const MY_ID = "ff177d7f-8d33-45b1-9b63-c55486347310";
+
+window.changeStatus = async () => {
+  await supabase
+    .from("profiles")
+    .update({
+      status: statusText.value,
+      color: statusColor.value
+    })
+    .eq("id", MY_ID);
+
+  loadUsers();
+};
+
+async function loadUsers() {
+  const { data } = await supabase
+    .from("profiles")
+    .select("*");
+
+  groupList.innerHTML = data.map(u => `
+    <div>
+      <b>${u.username}</b> - 
+      <span style="color:${u.color}">${u.status}</span>
     </div>
-    
-    
-    <script type="module">
-      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm
-      const URL 'https://rncerhgizyjhovbdpqnl.supabase.co';
-      const KEY *sb_publishable_ThtftS6uBeaKf8FyndIFTg_00HMJ5yh';
-      const supabase = createClient(URL, KEY);
-      
-      const MY_ID = 'ff177d7f-8d33-45b1-9b63-c55486347310';
-      
-      window.changeStatus = async (text, color) => {
-        const { error} = await supabase
-          .from('profiles')
-          .update({ status: text, color: color })
-          .eq('id', MY_ID);
-        
-        if (error) {
-          alert("Ошибка! Проверьте RLS политики в Supabase.");
-          console.error(error);
-        } else {
-          fetchGroup();
-        }
-      };
-      
-      async function fetchGroup() {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select(***)
-          .order('username', { ascending: true });
-        
-        if (error) return console.error(error);
-        
-        const list document.getElementById('groupList');
-        list.innerHTML = data.map(user => `
-          <div class="user-item">
-          <div class="status-dot" style="background: ${user.color || '#ccc'}"></div>
-          <div style="flex-grow: 1;">
-          <strong>${user.username}</strong><br>
-          <small style="color: #666;">${user.status || 'Status not set'}</small>
-          </div>
-          </div>
-          `).join('');
-            
-        const me = data.find(u => u.id === MY_ID);
-        if (me) document.getElementById('myInfo').innerText = "You are logged in as: ${me.username}";
-      }
-      
-      fetchGroup();
-      
-      setInterval(fetchGroup, 5000);
-    </script>
-  </body>
+  `).join("");
+}
+
+loadUsers();
+
+</script>
+
+</body>
 </html>
