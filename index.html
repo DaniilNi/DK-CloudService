@@ -219,17 +219,44 @@ const supabase = createClient(
 
 const MY_ID = "ff177d7f-8d33-45b1-9b63-c55486347310";
 
-window.changeStatus = async () => {
-  await supabase
+window.changeStatus = async (text, color) => {
+  const { error } = await supabase
     .from("profiles")
-    .update({
-      status: statusText.value,
-      color: statusColor.value
-    })
+    .update({ status: text, color: color })
     .eq("id", MY_ID);
-
+  
+  if (error) {
+    alert("Ошибка! Проверьте RLS политики в Supabase.");
+    console.error(error);
+  } else {
+    fetchGroup();
+  }
+  
   loadUsers();
 };
+
+  async function fetchGroup() {
+    const { data, error } = await supabase
+      .from('profiles')
+          .select(***)
+          .order('username', { ascending: true });
+        
+        if (error) return console.error(error);
+        
+        const list document.getElementById('groupList');
+        list.innerHTML = data.map(user => `
+          <div class="user-item">
+          <div class="status-dot" style="background: ${user.color || '#ccc'}"></div>
+          <div style="flex-grow: 1;">
+          <strong>${user.username}</strong><br>
+          <small style="color: #666;">${user.status || 'Status not set'}</small>
+          </div>
+          </div>
+          `).join('');
+            
+        const me = data.find(u => u.id === MY_ID);
+        if (me) document.getElementById('myInfo').innerText = "You are logged in as: ${me.username}";
+      }
 
 async function loadUsers() {
   const { data } = await supabase
@@ -243,8 +270,10 @@ async function loadUsers() {
     </div>
   `).join("");
 }
-
+  
+fetchGroup();
 loadUsers();
+setInterval(fetchGroup, 5000);
 
 </script>
 
