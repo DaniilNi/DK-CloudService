@@ -47,36 +47,56 @@
     
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-      import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, doc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-      
-      const firebaseConfig = {
-        apiKey: "AIzaSyDgUxR0Txafc_qA-rpdSzKn33265IfxsHU",
-        authDomain: "qazaq-a072e.firebaseapp.com",
-        projectId: "qazaq-a072e",
-        storageBucket: "qazaq-a072e.firebasestorage.app",
-        messagingSenderId: "47025480090",
-        appId: "1:47025480090:web: 3dd74ff29bc0c149f39a23",
-        measurementId: "G-9TE97NWMB9"
-      };
-      
-loginBtn.onclick = () => signInWithPopup(auth, provider);
-logoutBtn.onclick = () => signOut(auth);
+import { 
+  getFirestore, collection, addDoc, query, orderBy,
+  onSnapshot, serverTimestamp, updateDoc, doc, increment
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    userInfo.style.display = "flex";
-    loginBtn.style.display = "none";
-    formBlock.style.display = "block";
+import {
+  getAuth, signInWithPopup, GoogleAuthProvider,
+  signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
-    userName.innerText = user.displayName;
-    userPhoto.src = user.photoURL;
-  } else {
-    userInfo.style.display = "none";
-    loginBtn.style.display = "block";
-    formBlock.style.display = "none";
-  }
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyDfNDJWzFmXGLQSCiMcu8Th1hiHKFn8zew",
+  authDomain: "dk-cloudservice.firebaseapp.com",
+  projectId: "dk-cloudservice",
+  storageBucket: "dk-cloudservice.firebasestorage.app",
+  messagingSenderId: "693547692447",
+  appId: "1:693547692447:web:f8e296855617d1dcd28daa",
+  measurementId: "G-JB68T9ZG1M"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+      
+      // ЛОГИКА АВТОРИЗАЦИИ
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const userInfo = document.getElementById('userInfo');
+      const messageForm = document.getElementById('messageForm');
+      
+      loginBtn.onclick = () => signInWithPopup (auth, provider);
+      logoutBtn.onclick = () => signOut(auth);
+      
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+        loginBtn.style.display = 'none';
+          userInfo.style.display = 'flex';
+          messageForm.style.display = 'block';
+          document.getElementById('userName').innerText = user.displayName;
+          document.getElementById('userPhoto').src = user.photoURL;
+          document.getElementById('name').value = user.displayName;
+          document.getElementById('email').value = user.email;
+        } else {
+          loginBtn.style.display = 'block';
+          userInfo.style.display = 'none';
+          messageForm.style.display = 'none';
+        }
+      });
+
       
       // ЛОГИКА РАБОТЫ С ДАННЫМИ
       window.processLike = async (id) => {
