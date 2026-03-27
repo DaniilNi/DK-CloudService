@@ -159,14 +159,23 @@ const provider = new GoogleAuthProvider();
       /* ================= Таймер ================= */
 
       let seconds = 0;
-const timerDisplay = document.getElementById("study-timer");
+      let timer = null;         // Ссылка на setInterval
+      const timerDisplay = document.getElementById("study-timer");
 
-const timer = setInterval(() => {
-  seconds++;
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-}, 1000);
+      function updateDisplay() {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+
+// Старт таймера
+document.getElementById("start-btn").addEventListener("click", () => {
+  if (timer) return; // не запускаем, если уже идет
+  timer = setInterval(() => {
+    seconds++;
+    updateDisplay();
+  }, 1000);
+});
       
 // Пауза таймера
 document.getElementById("pauseBtn").addEventListener("click", () => {
