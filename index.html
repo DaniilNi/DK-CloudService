@@ -34,6 +34,10 @@
         <button id="logoutBtn" class="logout-btn">Выйти</button>
       </div>
     </div>
+
+    <div id="timeSection" class="container" style="max-width: 500px; text-align: center;">
+      <div>Время в учебе: <span id="study-timer">0:00</span></div>
+    </div>
     
     <div id="messageForm" class="container" style="display: none;">
       <h3>Сделать запись</h3>
@@ -148,6 +152,24 @@ const provider = new GoogleAuthProvider();
       });
       
       window.db = db; // Для тестов в консоли F12
+
+      /* ================= Таймер ================= */
+
+      let seconds = 0;
+const timerDisplay = document.getElementById("study-timer");
+
+const timer = setInterval(() => {
+  seconds++;
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+}, 1000);
+
+// Если нужно остановить таймер при выходе:
+window.addEventListener("beforeunload", () => {
+  clearInterval(timer);
+});
+      
     </script>
   </body>
 </html>
