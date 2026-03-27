@@ -37,6 +37,9 @@
 
     <div id="timeSection" class="container" style="max-width: 500px; text-align: center;">
       <div>Время в учебе: <span id="study-timer">0:00</span></div>
+      <button id="startBtn">Запуск</button>
+      <button id="pauseBtn">Пауза</button>
+      <button id="stopBtn">Остановить</button>
     </div>
     
     <div id="messageForm" class="container" style="display: none;">
@@ -164,6 +167,32 @@ const timer = setInterval(() => {
   const secs = seconds % 60;
   timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
 }, 1000);
+      
+// Пауза таймера
+document.getElementById("pauseBtn").addEventListener("click", () => {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+});
+
+// Продолжить таймер
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (!timer) {
+    timer = setInterval(() => {
+      seconds++;
+      updateDisplay();
+    }, 1000);
+  }
+});
+
+// Сброс таймера
+document.getElementById("stopBtn").addEventListener("click", () => {
+  clearInterval(timer);
+  timer = null;
+  seconds = 0;
+  updateDisplay();
+});
 
 // Если нужно остановить таймер при выходе:
 window.addEventListener("beforeunload", () => {
