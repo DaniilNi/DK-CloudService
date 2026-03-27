@@ -39,7 +39,6 @@
       <div>Время в учебе: <span id="study-timer">0:00</span></div>
       <button id="startBtn">Запуск</button>
       <button id="pauseBtn">Пауза</button>
-      <button id="resumeBtn">Продолжить</button>
       <button id="stopBtn">Остановить</button>
     </div>
     
@@ -183,16 +182,6 @@ document.getElementById("pauseBtn").addEventListener("click", () => {
   if (timer) {
     clearInterval(timer);
     timer = null;
-  }
-});
-
-// Продолжить таймер
-document.getElementById("resumeBtn").addEventListener("click", () => {
-  if (!timer) {
-    timer = setInterval(() => {
-      seconds++;
-      updateDisplay();
-    }, 1000);
   }
 });
 
