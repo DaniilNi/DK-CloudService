@@ -76,7 +76,7 @@
       
       onAuthStateChanged(auth, (user) => {
         if (user) {
-        loginBtn.style.display = 'none';
+          loginBtn.style.display = 'none';
           userInfo.style.display = 'flex';
           messageForm.style.display = 'block';
           document.getElementById('userName').innerText = user.displayName;
@@ -122,16 +122,17 @@
         feed.innerHTML = "";
         snapshot.forEach((doc) => {
           const data = doc.data();
-          feed.innerHTML +=
+          feed.innerHTML += `
             <div class="post">
             <div class="post-header">
             <img src="${data.photo || 'https://via.placeholder.com/30'}" class="post-avatar">
             <b>${data.name}</b>
-                         <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '...'}</span>
-                  </div>
-                  <p>${data.text || data.email}</p>
-        <button class="like-btn" onclick="processLike('${doc.id}')"> ${data.likes || 0}</button>
-        </div>
+            <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '...'}</span>
+            </div>
+            <p>${data.text || data.email}</p>
+            <button class="like-btn" onclick="processLike('${doc.id}')">👍 ${data.likes || 0}</button>
+            </div>
+            `;
         });
       });
       
