@@ -34,8 +34,6 @@
         <button id="logoutBtn" class="logout-btn">Выйти</button>
       </div>
     </div>
-
-    <div>Время в учебе: <span id="study-timer">0:00</span></div>
     
     <div id="messageForm" class="container" style="display: none;">
       <h3>Сделать запись</h3>
@@ -49,7 +47,7 @@
     
     <script type="module">
 
-      /* ================= FIREBASE ================= */
+/* ================= FIREBASE ================= */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { 
@@ -150,73 +148,6 @@ const provider = new GoogleAuthProvider();
       });
       
       window.db = db; // Для тестов в консоли F12
-
-      /* ================= SUPABASE ================= */
-      
-      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm
-      const URL 'https://rncerhgizyjhovbdpqnl.supabase.co';
-      const KEY *sb_publishable_ThtftS6uBeaKf8FyndIFTg_00HMJ5yh';
-      const supabase = createClient(URL, KEY);
-      
-      const MY_ID = 'ff177d7f-8d33-45b1-9b63-c55486347310';
-      
-      window.changeStatus = async (text, color) => {
-        const { error} = await supabase
-          .from('profiles')
-          .update({ status: text, color: color })
-          .eq('id', MY_ID);
-        
-        if (error) {
-          alert("Ошибка! Проверьте RLS политики в Supabase.");
-          console.error(error);
-        } else {
-          fetchGroup();
-        }
-      };
-      
-      async function fetchGroup() {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select(***)
-          .order('username', { ascending: true });
-        
-        if (error) return console.error(error);
-        
-        const list document.getElementById('groupList');
-        list.innerHTML = data.map(user => `
-          <div class="user-item">
-          <div class="status-dot" style="background: ${user.color || '#ccc'}"></div>
-          <div style="flex-grow: 1;">
-          <strong>${user.username}</strong><br>
-          <small style="color: #666;">${user.status || 'Status not set'}</small>
-          </div>
-          </div>
-          `).join('');
-            
-        const me = data.find(u => u.id === MY_ID);
-        if (me) document.getElementById('myInfo').innerText = "You are logged in as: ${me.username}";
-      }
-      
-      fetchGroup();
-      
-      setInterval(fetchGroup, 5000);
-      
-      /* ================= Таймер ================= */
-
-      let seconds = 0;
-const timerDisplay = document.getElementById("study-timer");
-
-const timer = setInterval(() => {
-  seconds++;
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-}, 1000);
-
-// Если нужно остановить таймер при выходе:
-window.addEventListener("beforeunload", () => {
-  clearInterval(timer);
-});
     </script>
   </body>
 </html>
