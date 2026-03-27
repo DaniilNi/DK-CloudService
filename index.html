@@ -77,23 +77,29 @@ const provider = new GoogleAuthProvider();
 
 /* ===== АВТОРИЗАЦИЯ ===== */
 
-loginBtn.onclick = () => signInWithPopup(auth, provider);
-logoutBtn.onclick = () => signOut(auth);
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    userInfo.style.display = "flex";
-    loginBtn.style.display = "none";
-    formBlock.style.display = "block";
-
-    userName.innerText = user.displayName;
-    userPhoto.src = user.photoURL;
-  } else {
-    userInfo.style.display = "none";
-    loginBtn.style.display = "block";
-    formBlock.style.display = "none";
-  }
-});
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const userInfo = document.getElementById('userInfo');
+      const messageForm = document.getElementById('messageForm');
+      
+      loginBtn.onclick = () => signInWithPopup (auth, provider);
+      logoutBtn.onclick = () => signOut(auth);
+      
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+        loginBtn.style.display = 'none';
+          userInfo.style.display = 'flex';
+          messageForm.style.display = 'block';
+          document.getElementById('userName').innerText = user.displayName;
+          document.getElementById('userPhoto').src = user.photoURL;
+          document.getElementById('name').value = user.displayName;
+          document.getElementById('email').value = user.email;
+        } else {
+          loginBtn.style.display = 'block';
+          userInfo.style.display = 'none';
+          messageForm.style.display = 'none';
+        }
+      });
       
       // ЛОГИКА РАБОТЫ С ДАННЫМИ
       window.processLike = async (id) => {
