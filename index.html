@@ -34,13 +34,6 @@
         <button id="logoutBtn" class="logout-btn">Выйти</button>
       </div>
     </div>
-
-    <div id="timeSection" class="container" style="max-width: 500px; text-align: center;">
-      <div>Время в учебе: <span id="study-timer">0:00</span></div>
-      <button id="startBtn">Запуск</button>
-      <button id="pauseBtn">Пауза</button>
-      <button id="stopBtn">Остановить</button>
-    </div>
     
     <div id="messageForm" class="container" style="display: none;">
       <h3>Сделать запись</h3>
@@ -61,7 +54,6 @@ import {
   getFirestore, collection, addDoc, query, orderBy,
   onSnapshot, serverTimestamp, updateDoc, doc, increment
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
 import {
   getAuth, signInWithPopup, GoogleAuthProvider,
   signOut, onAuthStateChanged
@@ -133,7 +125,7 @@ const provider = new GoogleAuthProvider();
         }
       };
       
-      // REAL-TIME ОБНОВЛЕНИЕ ЛЕНТЫ
+      // ОБНОВЛЕНИЕ ЛЕНТЫ
       const q = query(collection (db, "requests"), orderBy("timestamp", "desc"));
       onSnapshot (q, (snapshot) => {
         const feed = document.getElementById('feed');
@@ -155,49 +147,6 @@ const provider = new GoogleAuthProvider();
       });
       
       window.db = db; // Для тестов в консоли F12
-
-      /* ================= Таймер ================= */
-
-      let seconds = 0;
-      let timer = null;         // Ссылка на setInterval
-      const timerDisplay = document.getElementById("study-timer");
-
-      function updateDisplay() {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-      }
-
-// Старт таймера
-document.getElementById("startBtn").addEventListener("click", () => {
-  if (timer) return; // не запускаем, если уже идет
-  timer = setInterval(() => {
-    seconds++;
-    updateDisplay();
-  }, 1000);
-});
-      
-// Пауза таймера
-document.getElementById("pauseBtn").addEventListener("click", () => {
-  if (timer) {
-    clearInterval(timer);
-    timer = null;
-  }
-});
-
-// Сброс таймера
-document.getElementById("stopBtn").addEventListener("click", () => {
-  clearInterval(timer);
-  timer = null;
-  seconds = 0;
-  updateDisplay();
-});
-
-// Если нужно остановить таймер при выходе:
-window.addEventListener("beforeunload", () => {
-  clearInterval(timer);
-});
-      
     </script>
   </body>
 </html>
