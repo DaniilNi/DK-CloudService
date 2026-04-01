@@ -35,6 +35,9 @@
       </div>
     </div>
 
+    ${auth.currentUser?.email === data.email ? 
+  `<button onclick="deletePost('${doc.id}')">Удалить</button>` : ""}
+
     <div id="timeSection" class="container" style="max-width: 500px; text-align: center;">
       <div>Время в учебе: <span id="study-timer">0:00</span></div>
       <button id="startBtn">Запуск</button>
@@ -133,7 +136,7 @@ const provider = new GoogleAuthProvider();
         }
       };
       
-      // REAL-TIME ОБНОВЛЕНИЕ ЛЕНТЫ
+      // ОБНОВЛЕНИЕ ЛЕНТЫ
       const q = query(collection (db, "requests"), orderBy("timestamp", "desc"));
       onSnapshot (q, (snapshot) => {
         const feed = document.getElementById('feed');
@@ -155,6 +158,18 @@ const provider = new GoogleAuthProvider();
       });
       
       window.db = db; // Для тестов в консоли F12
+
+/* ================= Удаление ================= */
+      
+      
+
+      import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+window.deletePost = async (id) => {
+  if (!confirm("Удалить пост?")) return;
+  
+  await deleteDoc(doc(db, "requests", id));
+};
 
       /* ================= Таймер ================= */
 
