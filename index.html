@@ -170,19 +170,7 @@ const provider = new GoogleAuthProvider();
 
       /* ================= Комментарии ================= */
 
-      import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
-const commentsRef = collection(db, "requests", doc.id, "comments");
-
-onSnapshot(commentsRef, (snap) => {
-  const container = document.getElementById(`comments-${doc.id}`);
-  container.innerHTML = "";
-
-  snap.forEach(c => {
-    const data = c.data();
-    container.innerHTML += `<p><b>${data.user}:</b> ${data.text}</p>`;
-  });
-});
+      
 
       /* ================= Таймер ================= */
 
