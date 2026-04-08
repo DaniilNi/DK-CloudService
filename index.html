@@ -53,10 +53,6 @@
       
       ${auth.currentUser?.email === data.email ? 
       `<button onclick="deletePost('${doc.id}')">Удалить</button>` : ""}
-      
-      <input type="text" placeholder="Комментарий..." id="comment-${doc.id}">
-      <button onclick="addComment('${doc.id}')">Отправить</button>
-      <div id="comments-${doc.id}"></div>
     </div>
     
     <div id="feed" style="width: 100%; max-width: 500px; "></div>
@@ -172,7 +168,13 @@ const provider = new GoogleAuthProvider();
   && request.auth.token.email == resource.data.email;
 }
 
-      
+      import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+window.deletePost = async (id) => {
+  if (!confirm("Удалить пост?")) return;
+  
+  await deleteDoc(doc(db, "requests", id));
+};
 
 
       /* ================= Комментарии ================= */
