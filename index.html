@@ -170,23 +170,19 @@ const provider = new GoogleAuthProvider();
 
       /* ================= Комментарии ================= */
 
-      import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+      import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-window.addComment = async (postId) => {
-  const input = document.getElementById(`comment-${postId}`);
-  const text = input.value;
-  if (!text) return;
+const commentsRef = collection(db, "requests", doc.id, "comments");
 
-  await addDoc(collection(db, "requests", postId, "comments"), {
-    user: auth.currentUser.displayName,
-    text: text,
-    time: serverTimestamp()
+onSnapshot(commentsRef, (snap) => {
+  const container = document.getElementById(`comments-${doc.id}`);
+  container.innerHTML = "";
+
+  snap.forEach(c => {
+    const data = c.data();
+    container.innerHTML += `<p><b>${data.user}:</b> ${data.text}</p>`;
   });
-
-  input.value = "";
-};
-
-      
+});
 
       /* ================= Таймер ================= */
 
