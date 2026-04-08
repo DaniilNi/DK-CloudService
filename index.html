@@ -50,6 +50,12 @@
       <input type="email" id="email" placeholder="Baш Email" readonly>
       <input type="text" id="content" placeholder="Что у вас нового?">
       <button id="mainBtn">Опубликовать в облако</button>
+
+      `<button onclick="deletePost('${doc.id}')">Удалить</button>` : ""}
+      
+      <input type="text" placeholder="Комментарий..." id="comment-${doc.id}">
+      <button onclick="addComment('${doc.id}')">Отправить</button>
+      <div id="comments-${doc.id}"></div>
     </div>
     
     <div id="feed" style="width: 100%; max-width: 500px; "></div>
@@ -159,19 +165,6 @@ const provider = new GoogleAuthProvider();
       window.db = db; // Для тестов в консоли F12
 
 /* ================= Удаление ================= */
-      
-      match /requests/{id} {
-  allow delete: if request.auth != null 
-  && request.auth.token.email == resource.data.email;
-}
-
-      import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
-window.deletePost = async (id) => {
-  if (!confirm("Удалить пост?")) return;
-  
-  await deleteDoc(doc(db, "requests", id));
-};
 
 
       /* ================= Комментарии ================= */
