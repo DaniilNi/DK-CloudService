@@ -50,13 +50,6 @@
       <input type="email" id="email" placeholder="Baш Email" readonly>
       <input type="text" id="content" placeholder="Что у вас нового?">
       <button id="mainBtn">Опубликовать в облако</button>
-      
-      ${auth.currentUser?.email === data.email ? 
-      `<button onclick="deletePost('${doc.id}')">Удалить</button>` : ""}
-      
-      <input type="text" placeholder="Комментарий..." id="comment-${doc.id}">
-      <button onclick="addComment('${doc.id}')">Отправить</button>
-      <div id="comments-${doc.id}"></div>
     </div>
     
     <div id="feed" style="width: 100%; max-width: 500px; "></div>
