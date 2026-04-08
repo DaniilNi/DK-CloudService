@@ -170,7 +170,21 @@ const provider = new GoogleAuthProvider();
 
       /* ================= Комментарии ================= */
 
+      import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
+window.addComment = async (postId) => {
+  const input = document.getElementById(`comment-${postId}`);
+  const text = input.value;
+  if (!text) return;
+
+  await addDoc(collection(db, "requests", postId, "comments"), {
+    user: auth.currentUser.displayName,
+    text: text,
+    time: serverTimestamp()
+  });
+
+  input.value = "";
+};
 
       
 
