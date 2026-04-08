@@ -172,13 +172,7 @@ const provider = new GoogleAuthProvider();
   && request.auth.token.email == resource.data.email;
 }
 
-      import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
-window.deletePost = async (id) => {
-  if (!confirm("Удалить пост?")) return;
-  
-  await deleteDoc(doc(db, "requests", id));
-};
+      
 
 
       /* ================= Комментарии ================= */
