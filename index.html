@@ -48,8 +48,13 @@
       <input type="email" id="email" placeholder="Baш Email" readonly>
       <input type="text" id="content" placeholder="Что у вас нового?">
       <button id="mainBtn">Опубликовать в облако</button>
+      
       ${auth.currentUser?.email === data.email ? 
       `<button onclick="deletePost('${doc.id}')">Удалить</button>` : ""}
+      
+      <input type="text" placeholder="Комментарий..." id="comment-${doc.id}">
+      <button onclick="addComment('${doc.id}')">Отправить</button>
+      <div id="comments-${doc.id}"></div>
     </div>
     
     <div id="feed" style="width: 100%; max-width: 500px; "></div>
@@ -173,6 +178,39 @@ window.deletePost = async (id) => {
   await deleteDoc(doc(db, "requests", id));
 };
 
+
+      /* ================= Комментарии ================= */
+
+
+      import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+window.addComment = async (postId) => {
+  const input = document.getElementById(`comment-${postId}`);
+  const text = input.value;
+  if (!text) return;
+
+  await addDoc(collection(db, "requests", postId, "comments"), {
+    user: auth.currentUser.displayName,
+    text: text,
+    time: serverTimestamp()
+  });
+
+  input.value = "";
+};
+
+      import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const commentsRef = collection(db, "requests", doc.id, "comments");
+
+onSnapshot(commentsRef, (snap) => {
+  const container = document.getElementById(`comments-${doc.id}`);
+  container.innerHTML = "";
+
+  snap.forEach(c => {
+    const data = c.data();
+    container.innerHTML += `<p><b>${data.user}:</b> ${data.text}</p>`;
+  });
+});
       
 
       /* ================= Таймер ================= */
