@@ -40,6 +40,7 @@
       <button id="startBtn">Запуск</button>
       <button id="pauseBtn">Пауза</button>
       <button id="stopBtn">Сброс</button>
+      <button id="saveTmBtn">Сохранить время</button>
     </div>
     
     <div id="messageForm" class="container" style="display: none;">
@@ -186,11 +187,27 @@ document.getElementById("pauseBtn").addEventListener("click", () => {
 });
 
       // Сохранение времени
-      timer = setInterval(() => {
-  seconds++;
-  updateDisplay();
-  localStorage.setItem("studyTime", seconds); // сохранение
-}, 1000);
+      document.getElementById("saveTmBtn").addEventListener("click", async () => {
+  if (!auth.currentUser) {
+    alert("Сначала войдите в аккаунт");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "studyTime"), {
+      name: auth.currentUser.displayName,
+      email: auth.currentUser.email,
+      seconds: seconds,
+      formatted: timerDisplay.textContent,
+      timestamp: serverTimestamp()
+    });
+
+    alert("Время сохранено!");
+  } catch (e) {
+    console.error(e);
+    alert("Ошибка сохранения");
+  }
+});
 
 // Сброс таймера
 document.getElementById("stopBtn").addEventListener("click", () => {
