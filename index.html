@@ -185,6 +185,13 @@ document.getElementById("pauseBtn").addEventListener("click", () => {
   }
 });
 
+      // Сохранение времени
+      timer = setInterval(() => {
+  seconds++;
+  updateDisplay();
+  localStorage.setItem("studyTime", seconds); // сохранение
+}, 1000);
+
 // Сброс таймера
 document.getElementById("stopBtn").addEventListener("click", () => {
   clearInterval(timer);
