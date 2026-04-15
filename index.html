@@ -26,14 +26,6 @@
     </style>
   </head>
   <body>
-    <div id="authSection" class="container" style="max-width: 500px; text-align: center;">
-      <button id="loginBtn">Войти через Google</button>
-      <div id="userInfo" style="display: none;" class="auth-bar">
-        <img id="userPhoto" class="user-avatar" src="" alt="Avatar">
-        <span id="userName" style="font-weight: bold;"></span>
-        <button id="logoutBtn" class="logout-btn">Выйти</button>
-      </div>
-    </div>
     
     <div id="messageForm" class="container" style="display: none;">
       <h3>Сделать запись</h3>
@@ -73,32 +65,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-
-/* ===== АВТОРИЗАЦИЯ ===== */
-
-      const loginBtn = document.getElementById('loginBtn');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const userInfo = document.getElementById('userInfo');
-      const messageForm = document.getElementById('messageForm');
-      
-      loginBtn.onclick = () => signInWithPopup (auth, provider);
-      logoutBtn.onclick = () => signOut(auth);
-      
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-        loginBtn.style.display = 'none';
-          userInfo.style.display = 'flex';
-          messageForm.style.display = 'block';
-          document.getElementById('userName').innerText = user.displayName;
-          document.getElementById('userPhoto').src = user.photoURL;
-          document.getElementById('name').value = user.displayName;
-          document.getElementById('email').value = user.email;
-        } else {
-          loginBtn.style.display = 'block';
-          userInfo.style.display = 'none';
-          messageForm.style.display = 'none';
-        }
-      });
       
       // ЛОГИКА РАБОТЫ С ДАННЫМИ
       window.processLike = async (id) => {
