@@ -90,6 +90,32 @@ const provider = new GoogleAuthProvider();
           alert("Ошибка безопасности! Проверьте правила (Rules) в Firebase.");
         }
       };
+
+      /* ===== АВТОРИЗАЦИЯ ===== */
+
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const userInfo = document.getElementById('userInfo');
+      const messageForm = document.getElementById('messageForm');
+      
+      loginBtn.onclick = () => signInWithPopup (auth, provider);
+      logoutBtn.onclick = () => signOut(auth);
+      
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+        loginBtn.style.display = 'none';
+          userInfo.style.display = 'flex';
+          messageForm.style.display = 'block';
+          document.getElementById('userName').innerText = user.displayName;
+          document.getElementById('userPhoto').src = user.photoURL;
+          document.getElementById('name').value = user.displayName;
+          document.getElementById('email').value = user.email;
+        } else {
+          loginBtn.style.display = 'block';
+          userInfo.style.display = 'none';
+          messageForm.style.display = 'none';
+        }
+      });
       
       // ОБНОВЛЕНИЕ ЛЕНТЫ
       const q = query(collection (db, "requests"), orderBy("timestamp", "desc"));
