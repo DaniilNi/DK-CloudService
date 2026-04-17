@@ -23,31 +23,6 @@
       .post-avatar { width: 30px; height: 30px; border-radius: 50%; }
       .like-btn { cursor: pointer; border: none; background: #f8f9fa; padding: 5px 12px; border-radius: 20px; margin-top: 10px; }
       .time { font-size: 11px; color: #999; margin-left: auto; }
-
-      
-      .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 500px; padding: 25px; margin-bottom: 20px; box-sizing: border-box; }
-        
-      h2 { margin-top: 0; font-size: 22px; color: #1a1a1a; }
-      #myInfo { color: #555; margin-bottom: 20px; font-size: 16px; }
-
-      .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-      .status-btn { border: none; border-radius: 8px; padding: 12px; color: white; font-weight: 600; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; }
-      .status-btn:hover { opacity: 0.9; }
-
-        /* Цвета кнопок как на фото */
-      .btn-study { background-color: #2ba24c; }
-      .btn-coffee { background-color: #ffb800; }
-      .btn-game { background-color: #008f9f; }
-      .btn-home { background-color: #6c757d; }
-
-        /* Список группы */
-      #groupList { margin-top: 15px; }
-      .user-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-      .user-item:last-child { border-bottom: none; }
-      .status-dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 15px; flex-shrink: 0; }
-
-      .user-details strong { font-size: 18px; color: #000; }
-      .user-details small { color: #777; font-size: 14px; }
     </style>
   </head>
   <body>
@@ -74,24 +49,6 @@
       <input type="email" id="email" placeholder="Baш Email" readonly>
       <input type="text" id="content" placeholder="Что у вас нового?">
       <button id="mainBtn">Опубликовать в облако</button>
-    </div>
-
-    <div class="card">
-        <h2>Мой профиль</h2>
-        <div id="myInfo">Загрузка...</div>
-        
-        <div class="button-grid">
-            <button class="status-btn btn-study" onclick="changeStatus('📚 Учусь', '#2ba24c')">📚 Учусь</button>
-            <button class="status-btn btn-coffee" onclick="changeStatus('☕ Кофе-брейк', '#ffb800')">☕ Кофе</button>
-            <button class="status-btn btn-game" onclick="changeStatus('🎮 В игре', '#008f9f')">🎮 В игре</button>
-            <button class="status-btn btn-home" onclick="changeStatus('🏠 Дома', '#6c757d')">🏠 Дома</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>Монитор группы</h2>
-        <div id="groupList">
-            </div>
     </div>
     
     <div id="feed" style="width: 100%; max-width: 500px; "></div>
