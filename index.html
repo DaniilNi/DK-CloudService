@@ -78,10 +78,6 @@ const db = getFirestore(app); /* Подключение базы данных */
         try {await updateDoc(docRef, { likes: increment(1) });
             } catch (e) { console.error("Validation Error:", e.message); }
       }; 
-      
-      window.processLike = async (id) => { 
-        await updateDoc (doc(db, "requests", id), { likes: increment(1) });
-      };
 
       document.getElementById('mainBtn').onclick = async() => { /* Обработчик кнопки отправки записи */
         const content = document.getElementById('content').value; /* Получение значения из поля ввода записи */
