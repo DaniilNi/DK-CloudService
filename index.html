@@ -49,12 +49,6 @@ import {
   onSnapshot, serverTimestamp, updateDoc, doc, increment
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-import {
-  getAuth, signInWithPopup, GoogleAuthProvider,
-  signOut, onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"; 
-/* Импорт SDK */
-
 const firebaseConfig = {
   apiKey: "AIzaSyDfNDJWzFmXGLQSCiMcu8Th1hiHKFn8zew",
   authDomain: "dk-cloudservice.firebaseapp.com",
@@ -68,21 +62,23 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig); /* Инициализация приложения */
 const db = getFirestore(app); /* Подключение базы данных */
-const auth = getAuth(app); /* Внедрение авторизаации */
-const provider = new GoogleAuthProvider(); /* */
 
 /* ===== АВТОРИЗАЦИЯ ===== */
 
-      const loginBtn = document.getElementById('loginBtn'); /* Привеязка к кнопке "войти" */
-      const logoutBtn = document.getElementById('logoutBtn'); /* Привязка к кнопке "выйти" */
       const userInfo = document.getElementById('userInfo'); /* Привязка к данным в поле авторизации */
       const messageForm = document.getElementById('messageForm'); /* Привязка к информации из блока отправки записей */
       
       messageForm.style.display = 'block'; /* Отображать блок записей */
-      document.getElementById('name').value = user.displayName; /* Отображать на месте имени в блоке имя пользователя из аккаунта */
-      document.getElementById('email').value = user.email; /* Отображать на месте почты в блоке почту пользователя из аккаунта */
+      document.getElementById('name').value = user.displayName; /* Отображать на месте имени в блоке записи имя из аккаунта */
+      document.getElementById('email').value = user.email; /* Отображать на месте почты в блоке записей почту пользователя из аккаунта */
       
       // ЛОГИКА РАБОТЫ С ДАННЫМИ
+      window.processLike = async (id) => { 
+        const docRef = doc(db, "requests, id);
+        try {await updateDoc(docRef, { likes: increment(1) });
+            } catch (e) { console.error("Validation Error:", e.message); }
+      }; 
+      
       window.processLike = async (id) => { 
         await updateDoc (doc(db, "requests", id), { likes: increment(1) });
       };
@@ -95,7 +91,6 @@ const provider = new GoogleAuthProvider(); /* */
           await addDoc(collection (db, "requests"), { /* Добавление записи */
             name: auth.currentUser.displayName, /* Имя в записи */
             email: auth.currentUser.email, /* email */
-            photo: auth.currentUser.photoURL, /* Аватарка */
             text: content, /* Содержимое */
             likes: 0, /* Количество лайков */
             timestamp: serverTimestamp() /* Время отправки */
@@ -116,21 +111,11 @@ const provider = new GoogleAuthProvider(); /* */
           const data = doc.data(); /* Получение содержимого */
           feed.innerHTML += `
             <div class="post">
-            <div class="post-header">
-            <img src="${data.photo || 'https://via.placeholder.com/30'}" class="post-avatar">
-            <b>${data.name}</b>
-                         <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '...'}</span>
-                  </div>
-                  <p>${data.text || data.email}</p>
-        <button class="like-btn" onclick="processLike('${doc.id}')">👍 ${data.likes || 0}</button>
-        
-        ${auth.currentUser?.email === data.email ? 
-          `<button onclick="deletePost('${doc.id}')">Удалить</button>` : ""}
-      
-      <input type="text" placeholder="Комментарий..." id="comment-${doc.id}">
-      <button onclick="addComment('${doc.id}')">Отправить</button>
-      <div id="comments-${doc.id}"></div>
-        </div>
+            <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '}</span>
+                                 <b>${data.name}</b>
+                                 <p style="margin: 5px 0;">${data.email}</p>
+                                 <button class="like-btn" onclick="processLike('${doc.id}')"> ${data.likes || 0}</button>
+            </div>
         `;
           /* Визуальный элемент записи */
         });
