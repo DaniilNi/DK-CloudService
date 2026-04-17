@@ -106,23 +106,11 @@ const db = getFirestore(app); /* Подключение базы данных */
         snapshot.forEach((doc) => { /* Содержимое ленты */
           const data = doc.data(); /* Получение содержимого */
           feed.innerHTML += `
-            <div class="post">
-            <div class="post">
-            <div class="post-header">
-            <img src="${data.photo || 'https://via.placeholder.com/30'}" class="post-avatar">
-            <b>${data.name}</b>
-                         <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '...'}</span>
-                  </div>
-                  <p>${data.text || data.email}</p>
-        <button class="like-btn" onclick="processLike('${doc.id}')">👍 ${data.likes || 0}</button>
-        
-        ${auth.currentUser?.email === data.email ? 
-          `<button onclick="deletePost('${doc.id}')">Удалить</button>` : ""}
-      
-      <input type="text" placeholder="Комментарий..." id="comment-${doc.id}">
-      <button onclick="addComment('${doc.id}')">Отправить</button>
-      <div id="comments-${doc.id}"></div>
-        </div>
+            <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '}</span>
+                                 <b>${data.name}</b>
+                                 <p style="margin: 5px 0;">${data.email}</p>
+                                 <button class="like-btn" onclick="processLike('${doc.id}')"> ${data.likes || 0}</button>
+            </div>
         `;
           /* Визуальный элемент записи */
         });
