@@ -165,6 +165,58 @@ const provider = new GoogleAuthProvider();
       
       window.db = db; // Для тестов в консоли F12
 
+            /* ================= SUPABASE ================= */
+      
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Исправленные переменные (добавлены "=" и кавычки)
+        const URL = 'https://rncerhgizyjhovbdpqnl.supabase.co';
+        const KEY = 'sb_publishable_ThtftS6uBeaKf8FyndIFTg_00HMJ5yh'; // Убедитесь, что это верный ключ
+        const supabase = createClient(URL, KEY);
+        
+        const MY_ID = 'ff177d7f-8d33-45b1-9b63-c55486347310';
+        
+        window.changeStatus = async (text, color) => {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ status: text, color: color })
+                .eq('id', MY_ID);
+            
+            if (error) {
+                alert("Ошибка! Проверьте RLS политики в Supabase.");
+                console.error(error);
+            } else {
+                fetchGroup();
+            }
+        };
+        
+        async function fetchGroup() {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .order('username', { ascending: true });
+            
+            if (error) return console.error(error);
+            
+            const list = document.getElementById('groupList');
+            list.innerHTML = data.map(user => `
+                <div class="user-item">
+                    <div class="status-dot" style="background: ${user.color || '#ccc'}"></div>
+                    <div style="flex-grow: 1;">
+                        <strong>${user.username}</strong><br>
+                        <small style="color: 666;">${user.status || 'Статус не задан'}</small>
+                    </div>
+                </div>
+            `).join('');
+            
+            const me = data.find(u => u.id === MY_ID);
+            if (me) document.getElementById('myInfo').innerText = `Вы зашли как: ${me.username}`;
+        }
+        
+        // Начальная загрузка и интервал
+        fetchGroup();
+        setInterval(fetchGroup, 5000);
+
 /* ================= Удаление ================= */
 
 
