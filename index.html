@@ -1,50 +1,59 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru"> <!-- Язык русский -->
+  
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Облачное приложение</title>
-    <style>
+    <meta charset="UTF-8"> <!-- Кодировка -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Адаптивность под мобильные устройства -->
+    <title>Облачное приложение</title> 
+    <style> /* Визуальные элементы */
       body { font-family: 'Inter', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-      .container { width: 100%; max-width: 500px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+      .container { width: 100%; max-width: 500px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; } /* Стиль контейнеров */
       
       /* Стили блока авторизации */
-      .auth-bar { background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-      .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #007bff; }
+      .auth-bar { background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); } /* Стить полей авторизации */ 
+      .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #007bff; } /* Стиль аватарок */
       
-      input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-      button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: 600; cursor: pointer; transition: 0.3s; }
+      input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; } /* Стиль полей ввода */
+      button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: 600; cursor: pointer; transition: 0.3s; } /* стиль кнопок */
       button:hover { background: #0056b3; }
       button:disabled { background: #ccc; }
-      .logout-btn { background: #ff4757; padding: 8px 15px; width: auto; font-size: 14px; }
+      .logout-btn { background: #ff4757; padding: 8px 15px; width: auto; font-size: 14px; } /* Стиль кнопки "выйти" */
       
-      .post { background: #fff; border: 1px solid #eaeaea; padding: 15px; margin-top: 15px; border-radius: 8px; width: 100%; max-width: 500px; }
-      .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-      .post-avatar { width: 30px; height: 30px; border-radius: 50%; }
-      .like-btn { cursor: pointer; border: none; background: #f8f9fa; padding: 5px 12px; border-radius: 20px; margin-top: 10px; }
-      .time { font-size: 11px; color: #999; margin-left: auto; }
+      .post { background: #fff; border: 1px solid #eaeaea; padding: 15px; margin-top: 15px; border-radius: 8px; width: 100%; max-width: 500px; } /* Стиль постов */
+      .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; } /* Стиль заголовка постов*/
+      .post-avatar { width: 30px; height: 30px; border-radius: 50%; } /* Стиль аватарки на постах */
+      .like-btn { cursor: pointer; border: none; background: #f8f9fa; padding: 5px 12px; border-radius: 20px; margin-top: 10px; } /* Стиль кнопки "лайк" */
+      .time { font-size: 11px; color: #999; margin-left: auto; } /* Стиль счётчика времени */
     </style>
   </head>
+  
   <body>
-    <div id="messageForm" class="container" style="display: none;">
-      <h3>Панель управления данными</h3>
-      <input type="text" id="name" placeholder="Имя профиля" readonly>
-      <input type="email" id="email" placeholder="Baш Email" readonly>
-      <input type="text" id="content" placeholder="Что у вас нового?">
-      <button id="mainBtn">Опубликовать в облако</button>
+    
+    <div id="messageForm" class="container" style="display: none;"> <!-- Блок сохранения записей -->
+      <h3>Сделать запись</h3> <!-- Заголовок -->
+      <input type="text" id="name" placeholder="Имя профиля" readonly> <!-- Поле ввода имени -->
+      <input type="email" id="email" placeholder="Baш Email" readonly> <!-- Поле ввода email -->
+      <input type="text" id="content" placeholder="Что у вас нового?"> <!-- Поле ввода записи -->
+      <button id="mainBtn">Опубликовать в облако</button> <!-- Кнопка опубликовать -->
     </div>
     
-    <div id="feed" style="width: 100%; max-width: 500px; "></div>
+    <div id="feed" style="width: 100%; max-width: 500px; "></div> <!-- Записи -->
     
     <script type="module">
 
 /* ================= FIREBASE ================= */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"; 
 import { 
   getFirestore, collection, addDoc, query, orderBy,
   onSnapshot, serverTimestamp, updateDoc, doc, increment
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+import {
+  getAuth, signInWithPopup, GoogleAuthProvider,
+  signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"; 
+/* Импорт SDK */
 
 const firebaseConfig = {
   apiKey: "AIzaSyDfNDJWzFmXGLQSCiMcu8Th1hiHKFn8zew",
@@ -55,27 +64,41 @@ const firebaseConfig = {
   appId: "1:693547692447:web:f8e296855617d1dcd28daa",
   measurementId: "G-JB68T9ZG1M"
 };
+/* Насройки FIREBASE */
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app = initializeApp(firebaseConfig); /* Инициализация приложения */
+const db = getFirestore(app); /* Подключение базы данных */
+const auth = getAuth(app); /* Внедрение авторизаации */
+const provider = new GoogleAuthProvider(); /* */
 
-// ЛОГИКА РАБОТЫ С ДАННЫМИ
-      window.processLike = async (id) => {
+/* ===== АВТОРИЗАЦИЯ ===== */
+
+      const loginBtn = document.getElementById('loginBtn'); /* Привеязка к кнопке "войти" */
+      const logoutBtn = document.getElementById('logoutBtn'); /* Привязка к кнопке "выйти" */
+      const userInfo = document.getElementById('userInfo'); /* Привязка к данным в поле авторизации */
+      const messageForm = document.getElementById('messageForm'); /* Привязка к информации из блока отправки записей */
+      
+      messageForm.style.display = 'block'; /* Отображать блок записей */
+      document.getElementById('name').value = user.displayName; /* Отображать на месте имени в блоке имя пользователя из аккаунта */
+      document.getElementById('email').value = user.email; /* Отображать на месте почты в блоке почту пользователя из аккаунта */
+      
+      // ЛОГИКА РАБОТЫ С ДАННЫМИ
+      window.processLike = async (id) => { 
         await updateDoc (doc(db, "requests", id), { likes: increment(1) });
       };
 
-      document.getElementById('mainBtn').onclick = async() => {
-        const content = document.getElementById('content').value;
-        if (!content) return alert("Введите текст сообщения");
+      document.getElementById('mainBtn').onclick = async() => { /* Обработчик кнопки отправки записи */
+        const content = document.getElementById('content').value; /* Получение значения из поля ввода записи */
+        if (!content) return alert("Введите текст сообщения"); /* Вывести сообщение при отсутствии текста в поле */
         
-        try {
-          await addDoc(collection (db, "requests"), {
-            name: auth.currentUser.displayName,
-            email: auth.currentUser.email,
-            photo: auth.currentUser.photoURL,
-            text: content,
-            likes: 0,
-            timestamp: serverTimestamp()
+        try { 
+          await addDoc(collection (db, "requests"), { /* Добавление записи */
+            name: auth.currentUser.displayName, /* Имя в записи */
+            email: auth.currentUser.email, /* email */
+            photo: auth.currentUser.photoURL, /* Аватарка */
+            text: content, /* Содержимое */
+            likes: 0, /* Количество лайков */
+            timestamp: serverTimestamp() /* Время отправки */
           });
           document.getElementById('content').value = "";
         } catch (e) {
@@ -85,24 +108,36 @@ const db = getFirestore(app);
       };
       
       // ОБНОВЛЕНИЕ ЛЕНТЫ
-      const q = query(collection (db, "requests"), orderBy("timestamp", "desc"));
-      onSnapshot (q, (snapshot) => {
-        const feed = document.getElementById('feed');
-        feed.innerHTML = "";
-        snapshot.forEach((doc) => {
-          const data = doc.data();
+      const q = query(collection (db, "requests"), orderBy("timestamp", "desc")); /* Сортировка по времени*/
+      onSnapshot (q, (snapshot) => { /* Изменения в реальном времени */
+        const feed = document.getElementById('feed'); /* Привязка к ленте записей */
+        feed.innerHTML = ""; /* Лента */
+        snapshot.forEach((doc) => { /* Содержимое ленты */
+          const data = doc.data(); /* Получение содержимого */
           feed.innerHTML += `
             <div class="post">
+            <div class="post-header">
+            <img src="${data.photo || 'https://via.placeholder.com/30'}" class="post-avatar">
             <b>${data.name}</b>
-            <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '...'}</span>
-            <p>${data.text || data.email}</p>
-            <button class="like-btn" onclick="processLike('${doc.id}')">👍 ${data.likes || 0}</button>
+                         <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '...'}</span>
+                  </div>
+                  <p>${data.text || data.email}</p>
+        <button class="like-btn" onclick="processLike('${doc.id}')">👍 ${data.likes || 0}</button>
+        
+        ${auth.currentUser?.email === data.email ? 
+          `<button onclick="deletePost('${doc.id}')">Удалить</button>` : ""}
+      
+      <input type="text" placeholder="Комментарий..." id="comment-${doc.id}">
+      <button onclick="addComment('${doc.id}')">Отправить</button>
+      <div id="comments-${doc.id}"></div>
         </div>
         `;
+          /* Визуальный элемент записи */
         });
       });
       
       window.db = db; // Для тестов в консоли F12
+      
     </script>
   </body>
 </html>
