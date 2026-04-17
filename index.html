@@ -74,7 +74,7 @@ const db = getFirestore(app); /* Подключение базы данных */
       
       // ЛОГИКА РАБОТЫ С ДАННЫМИ
       window.processLike = async (id) => { 
-        const docRef = doc(db, "requests, id);
+        const docRef = doc(db, "requests", id);
         try {await updateDoc(docRef, { likes: increment(1) });
             } catch (e) { console.error("Validation Error:", e.message); }
       }; 
