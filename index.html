@@ -220,7 +220,7 @@ const provider = new GoogleAuthProvider();
         
         window.changeStatus = async (text, color) => {
             const { error } = await supabase
-                .from('profiles')
+                .from('Profiles')
                 .update({ status: text, color: color })
                 .eq('id', MY_ID);
             
@@ -234,7 +234,7 @@ const provider = new GoogleAuthProvider();
         
         async function fetchGroup() {
             const { data, error } = await supabase
-                .from('profiles')
+                .from('Profiles')
                 .select('*')
                 .order('username', { ascending: true });
             
